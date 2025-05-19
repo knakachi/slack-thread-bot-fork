@@ -222,10 +222,13 @@ class SlackEndpoint(Endpoint):
             allowed_channel_setting = settings.get("allowed_channel", "").strip()
 
             # Handle different event types
-            if event.get("type") == "app_mention":
-                # Handle mention events - when the bot is @mentioned
-                message = event.get("text", "")
-
+            if (
+                event.get("type") == "app_mention"                 # チャンネルでメンション
+                or (
+                    event.get("type") == "message"                 # DM は type=message
+                    and event.get("channel_type") == "im"          # channel_type=im が 1:1 DM
+                )
+            ):
                 # Remove the bot mention from the beginning of the message
                 if message.startswith("<@"):
                     message = message.split("> ", 1)[1] if "> " in message else message
