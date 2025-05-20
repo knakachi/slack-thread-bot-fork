@@ -1,6 +1,6 @@
 version: 0.0.3-fork
 type: plugin
-author: solaoi(forked by KNakachi)
+author: knakachi
 name: slack-thread-bot-fork
 label:
   en_US: Slack Thread Bot (Fork)
