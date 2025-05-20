@@ -217,6 +217,12 @@ class SlackEndpoint(Endpoint):
         # Handle Slack events
         if data.get("type") == "event_callback":
             event = data.get("event")
+            message = event.get("text", "")
+
+            # Ignore any message that comes from a bot (including this bot itself) to prevent reply–reply loops.
+            # Bot-originated events include either a `bot_id` field or subtype `bot_message`.
+            if event.get("bot_id") is not None or event.get("subtype") == "bot_message":
+                return Response(status=200, response="ok")
 
             # allowed_channel設定を取得
             allowed_channel_setting = settings.get("allowed_channel", "").strip()
@@ -243,7 +249,7 @@ class SlackEndpoint(Endpoint):
                 client = WebClient(token=token)
 
                 # allowed_channel が指定されているかチェック
-                if allowed_channel_setting:
+                if allowed_channel_setting and event.get("channel_type") != "im":
                     try:
                         # チャンネルIDからチャンネル名を取得
                         channel_info = client.conversations_info(channel=channel)
