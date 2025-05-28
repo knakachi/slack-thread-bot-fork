@@ -218,6 +218,8 @@ class SlackEndpoint(Endpoint):
         if data.get("type") == "event_callback":
             event = data.get("event")
             message = event.get("text", "")
+            sender_user_id = event.get("user", "")   # 例: U04ABCDEF
+            message_ts     = event.get("ts", "")     # 例: 1716430212.123456
 
             # Ignore any message that comes from a bot (including this bot itself) to prevent reply–reply loops.
             # Bot-originated events include either a `bot_id` field or subtype `bot_message`.
@@ -438,6 +440,8 @@ class SlackEndpoint(Endpoint):
                         ),
                         "thread_ts": thread_ts,
                         "channel_id": channel,
+                        "sender_user_id": sender_user_id,
+                        "message_ts": message_ts,
                     }
                     if uploaded_files:
                         app_invoke_inputs["files"] = [
